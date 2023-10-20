@@ -33,9 +33,9 @@ while getgenv().startFarming do
             if not getgenv().startFarming == true then return end
             pcall(function()
                 Player.Character.HumanoidRootPart.CFrame = CFrame.new(v.Coin.Position + Vector3.new(0, 3, 0)) * CFrame.Angles(90, 0, 0)
-                wait(0.7)
+                wait(0.75)
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-107.101, 137.823, 1.04364)
-                wait(1.6)
+                wait(1.75)
             end)
         end
     end
