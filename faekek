@@ -1,0 +1,92 @@
+repeat wait() until game:IsLoaded() game:GetService("Players").LocalPlayer.Idled:connect(function() game:GetService("VirtualUser"):ClickButton2(Vector2.new()) end)
+local success, error = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KeybindsX/ProjectKeybinds/main/destruct"))()
+end)
+if not success then game.Players.LocalPlayer:Kick("You no longer have access to the script. GoodBye :)") return end
+
+function getInboundTradeGui()
+    return game:GetService("Players").LocalPlayer.PlayerGui.MainGUI.Game.Leaderboard.Container.TradeRequest
+end
+
+function getTradingGui()
+    return game:GetService("Players").LocalPlayer.PlayerGui.TradeGUI
+end
+
+function acceptRequest()
+    game:GetService("ReplicatedStorage").Trade.AcceptRequest:FireServer()
+end
+
+function acceptTrade()
+    game:GetService("ReplicatedStorage").Trade.AcceptTrade:FireServer()
+end
+
+function sendChatMessage(message)
+    local arguments = { [1] =  message, [2] = "normalchat" }
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(unpack(arguments))
+end
+
+function declineTrade()
+    game:GetService("ReplicatedStorage").Trade.DeclineTrade:FireServer()
+end
+
+function playerHasAccepted()
+    return game:GetService("Players").LocalPlayer.PlayerGui.TradeGUI.Container.Trade.TheirOffer.Accepted.Visible
+end
+
+function getTradingUsername()
+    local Temp = game:GetService("Players").LocalPlayer.PlayerGui.TradeGUI.Container.Trade.TheirOffer.Username.Text
+    local getValue = string.gsub(Temp, "%(", "")
+    local Username = string.gsub(getValue, "%)", "")
+    return tostring(Username)
+end
+
+sendChatMessage("BloxLuck | Bot is now online. Feel free to trade")
+
+local cooldownplayers = {}
+
+function main()
+    repeat wait() until getInboundTradeGui().Visible == true  
+    wait(0.05)
+    acceptRequest()
+    repeat wait() until getTradingGui().Enabled == true
+    local oldUser = getTradingUsername()
+   --[[ if table.find(cooldownplayers, oldUser) then
+        declineTrade()
+        sendChatMessage("BloxLuck | You are currently on trading cooldown!")
+        return
+    end ]]
+    local Username = oldUser -- .. " (" .. game.Players[oldUser].DisplayName .. ")"
+    wait(0.05)
+    sendChatMessage("BloxLuck | Trade with " .. Username .. " Accepted: Deposit")
+    repeat wait() until playerHasAccepted() or getTradingGui().Enabled == false
+    local accepted = false
+    if playerHasAccepted() then accepted = true end
+    acceptTrade()
+    wait()
+    if accepted then
+        wait(1.5)
+        sendChatMessage("BloxLuck | Trade with " .. Username .. " Completed")
+    else
+        sendChatMessage("BloxLuck | Trade has been cancelled.")
+    end
+    --[[
+    if not table.find(cooldownplayers, oldUser) then
+        table.insert(cooldownplayers, oldUser)
+        wait(8)
+        table.remove(cooldownplayers, oldUser)
+    end
+    ]]
+end
+
+while true do
+    main()
+    wait()
+end
+
+--[[task.spawn(function()
+    while wait(30) do
+        if getgenv().currentlyTrading == false then
+            sendChatMessage("Trade BloxytDepot1 for a fully automated deposit system made using the official BloxLuck API for 100% security :)")
+        end
+    end
+end)]]
